@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../output.css">
+</head>
+<body>
+    <div class="h-[100vh] flex flex-col justify-center items-center">
+        <div id="gameBoard" class="bg-slate-300 w-[500px] h-[500px] grid grid-cols-3 grid-rows-3 gap-3 p-5">
+            <div cellIndex="0" class="cell bg-slate-400 text-5xl font-mono font-bold grid place-content-center"></div>
+            <div cellIndex="1" class="cell bg-slate-400 text-5xl font-mono font-bold grid place-content-center"></div>
+            <div cellIndex="2" class="cell bg-slate-400 text-5xl font-mono font-bold grid place-content-center"></div>
+            <div cellIndex="3" class="cell bg-slate-400 text-5xl font-mono font-bold grid place-content-center"></div>
+            <div cellIndex="4" class="cell bg-slate-400 text-5xl font-mono font-bold grid place-content-center"></div>
+            <div cellIndex="5" class="cell bg-slate-400 text-5xl font-mono font-bold grid place-content-center"></div>
+            <div cellIndex="6" class="cell bg-slate-400 text-5xl font-mono font-bold grid place-content-center"></div>
+            <div cellIndex="7" class="cell bg-slate-400 text-5xl font-mono font-bold grid place-content-center"></div>
+            <div cellIndex="8" class="cell bg-slate-400 text-5xl font-mono font-bold grid place-content-center"></div>
+        </div>
+        <div class="mt-3 status-text"></div>
+        <button class="restart-btn border-2 px-6 py-1 bg-slate-500 text-white font-mono font-bold mt-3">Restart</button>
+    </div>
+    <script>
+        const cells = document.querySelectorAll(".cell");
+        const restartButton = document.querySelector(".restart-btn");
+        const statusText = document.querySelector(".status-text");
+        let winningConditions = [
+            [0,1,2],
+            [3,4,5],
+            [6,7,8],
+            [0,3,6],
+            [1,4,7],
+            [2,5,8],
+            [0,4,8],
+            [2,4,6]
+        ];
+
+        let option = ["","","","","","","","",""];
+        let currentPlayer = "X";
+        let running = false;
+
+
+
+        initializeGame();
+        function initializeGame(){
+            cells.forEach((cell)=>{
+                cell.addEventListener("click",cellFilled)
+            });
+            restartButton.addEventListener("click",restartGame);
+            statusText.textContent = `${currentPlayer}'s turn`
+            running = true;
+        }
+        function cellFilled(){
+            const cellIndex = this.getAttribute("cellIndex");
+            if(option[cellIndex] != "" || !running){
+                return;
+            }
+            else{
+                option[cellIndex] = currentPlayer;
+                this.textContent = currentPlayer;
+                gameWinner();
+            }
+        }
+        function changePlayer(){
+            currentPlayer = (currentPlayer == "X") ? "O" : "X";
+            statusText.textContent = `${currentPlayer}'s turn`;
+        }
+        function gameWinner(){
+            let roundWon = false;
+            for(let i = 0; i<winningConditions.length; i++){
+                const condition = winningConditions[i];
+                const cellA = option[condition[0]];
+                const cellB = option[condition[1]];
+                const cellC = option[condition[2]];
+
+                if(cellA == "" || cellB == "" || cellC == ""){
+                    continue;
+                }
+                if(cellA == cellB && cellB == cellC){
+                    roundWon = true;
+                    break;
+                }
+            }
+            if(roundWon){
+                statusText.textContent =`${currentPlayer} won!`;
+                running = false;
+            }else if(!option.includes("")){
+                statusText.textContent = "Draw";
+                running = false;
+            }
+            else{
+                changePlayer();
+            }
+        }
+        function restartGame(){
+            currentPlayer = "X";
+            cells.forEach(cell => cell.textContent = "");
+            option = ["","","","","","","","",""];
+            statusText.textContent = `${currentPlayer}'s turn`;
+            running = true;
+        }
+    </script>
+</body>
+</html>
